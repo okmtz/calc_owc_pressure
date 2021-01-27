@@ -15,7 +15,6 @@ def read_input_value(load_path):
             input_data = yaml.safe_load(yml)
     except Exception as e:
         print(e)
-
     return input_data
 
 
@@ -31,6 +30,7 @@ def init_input_data(input_data):
     phase_diff = input_data['input']['phase_diff']
     p0 = input_data['input']['p0']
     p0_delta = input_data['input']['p0_delta']
+    total_time = period * 15
     # 絞り直径比
     d_ratio = n_diam / D0
     # カラム内断面積
