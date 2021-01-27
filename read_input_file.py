@@ -23,7 +23,7 @@ def init_input_data(input_data):
     period = input_data['input']['period']
     n = input_data['input']['n']
     total_time = input_data['input']['total_time']
-    n_diam = input_data['input']['n_diam']
+    n_ratio = input_data['input']['n_ratio']
     D0 = input_data['input']['D0']
     Zh = input_data['input']['Zh']
     Zh0 = input_data['input']['Zh0']
@@ -32,7 +32,8 @@ def init_input_data(input_data):
     p0_delta = input_data['input']['p0_delta']
     total_time = period * 15
     # 絞り直径比
-    d_ratio = n_diam / D0
+    d_ratio = n_ratio ** (1/2)
+    n_diam = D0 * d_ratio
     # カラム内断面積
     A0 = ((D0 / 2) ** 2) ** np.pi
     A = A0 * (d_ratio ** 2)
