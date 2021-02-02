@@ -2,4 +2,4 @@ autopep8
 pyyaml
 numpy
 pandas
-
+scipy

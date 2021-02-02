@@ -24,3 +24,18 @@ def calc_flow(f_ci, p_list):
             flow = (-1) * back_flow(c_c, A, p)
         flow_list.append(flow)
     return flow_list
+
+def calc_flow_and_mass_flow(f_ci, p_list):
+    flow_list = []
+    mass_flow_list = []
+    for p in p_list:
+        dens = calc_density(p)
+        if (p > p_air):
+            c_c = comp_condensation_coef(f_ci, p, p_air)
+            flow = forward_flow(c_c, A, p, dens)
+        else:
+            c_c = comp_condensation_coef(f_ci, p_air, p)
+            flow = (-1) * back_flow(c_c, A, p)
+        flow_list.append(flow)
+        mass_flow_list.append(dens * flow_list)
+    return flow_list, mass_flow_list
