@@ -65,7 +65,7 @@ def main(args):
     c_ci = incomp_condensation_coef(d_ratio)
     # 非圧縮性の力欠損係数
     f_i = incomp_force_coef(c_ci)
-    flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list)
+    flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list, A)
     guess_flow = exec_curve_fit(period, t_list, flow_list)
     guess_mass_flow = exec_curve_fit(period, t_list, mass_flow_list)
     print('flow')
