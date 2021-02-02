@@ -26,8 +26,9 @@ def main(args):
     load_file_path = 'inputs/' + load_file_name
     save_file_path = 'outputs/' + save_file_name
 
+
     print('#####################################################')
-    print(f"loading input file {args.load_file_name}")
+    print(f"loading input file {load_file_name}")
     print('#####################################################')
 
     input_data = read_input_value(load_file_path)
