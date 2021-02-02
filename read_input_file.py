@@ -22,7 +22,6 @@ def init_input_data(input_data):
     global p_air, dens_air, h_ratio
     period = input_data['input']['period']
     n = input_data['input']['n']
-    total_time = input_data['input']['total_time']
     n_ratio = input_data['input']['n_ratio']
     D0 = input_data['input']['D0']
     Zh = input_data['input']['Zh']
@@ -30,6 +29,7 @@ def init_input_data(input_data):
     phase_diff = input_data['input']['phase_diff']
     p0 = input_data['input']['p0']
     p0_delta = input_data['input']['p0_delta']
+    # 15周期分
     total_time = period * 15
     # 絞り直径比
     d_ratio = n_ratio ** (1/2)
