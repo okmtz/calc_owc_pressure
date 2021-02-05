@@ -4,7 +4,10 @@ import time
 from read_input_file import p_air, dens_air, h_ratio
 from read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
+from calc_coefficient import incomp_condensation_coef, incomp_force_coef
+from calc_flow import calc_flow_and_mass_flow
 from output import output_to_csv
+from curve_fit import exec_curve_fit
 
 
 def get_arg():
@@ -54,17 +57,36 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
-    print('#####################################################')
-    print('file outputing')
-    print('#####################################################')
-    output_to_csv(t_list, p_diff_list, p_correct_diff_list, save_file_path)
+    guess_pres = exec_curve_fit(period, t_list, p_correct_diff_list)
+    print('pressure')
+    print('freq, apm, phase, offset')
+    print(guess_pres)
 
-    total_time_end = time.time()
-    total_time = divmod(total_time_end-total_time_start, 60)
-    print('#####################################################')
-    print(f'output result {save_file_name}')
-    print(f'total time: {int(total_time[0])}m {int(total_time[1])}s')
-    print('#####################################################')
+    c_ci = incomp_condensation_coef(d_ratio)
+    # 非圧縮性の力欠損係数
+    f_i = incomp_force_coef(c_ci)
+    flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list, A)
+    guess_flow = exec_curve_fit(period, t_list, flow_list)
+    guess_mass_flow = exec_curve_fit(period, t_list, mass_flow_list)
+    print('flow')
+    print('freq, apm, phase, offset')
+    print(guess_flow)
+
+    print('mass flow')
+    print('freq, apm, phase, offset')
+    print(guess_mass_flow)
+
+    # print('#####################################################')
+    # print('file outputing')
+    # print('#####################################################')
+    # # output_to_csv(t_list, p_diff_list, p_correct_diff_list, save_file_path)
+
+    # # total_time_end = time.time()
+    # # total_time = divmod(total_time_end-total_time_start, 60)
+    # print('#####################################################')
+    # # print(f'output result {save_file_name}')
+    # # print(f'total time: {int(total_time[0])}m {int(total_time[1])}s')
+    # print('#####################################################')
 
 
 if __name__ == '__main__':
