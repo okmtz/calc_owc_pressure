@@ -4,6 +4,8 @@ import time
 from read_input_file import p_air, dens_air, h_ratio
 from read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
+from calc_coefficient import incomp_condensation_coef, incomp_force_coef
+from calc_flow import calc_flow_and_mass_flow
 from output import output_to_csv
 
 
@@ -54,10 +56,17 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
+    c_ci = incomp_condensation_coef(d_ratio)
+    # 非圧縮性の力欠損係数
+    f_i = incomp_force_coef(c_ci)
+    flow_list, mass_flow_list, dens_list = calc_flow_and_mass_flow(f_i, p_list, A)
+    flow_list = np.array(flow_list)
+    mass_flow_list = np.array(mass_flow_list)
+    dens_list = np.array(dens_list)
     print('#####################################################')
     print('file outputing')
     print('#####################################################')
-    output_to_csv(t_list, p_diff_list, p_correct_diff_list, save_file_path)
+    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, dens_list, save_file_path)
 
     total_time_end = time.time()
     total_time = divmod(total_time_end-total_time_start, 60)
