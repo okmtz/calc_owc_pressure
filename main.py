@@ -63,10 +63,11 @@ def main(args):
     flow_list = np.array(flow_list)
     mass_flow_list = np.array(mass_flow_list)
     dens_list = np.array(dens_list)
+    zd_list = v0_list / A0
     print('#####################################################')
     print('file outputing')
     print('#####################################################')
-    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, dens_list, save_file_path)
+    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, dens_list, zd_list, save_file_path)
 
     total_time_end = time.time()
     total_time = divmod(total_time_end-total_time_start, 60)
