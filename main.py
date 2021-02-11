@@ -57,7 +57,18 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
-    guess_pres = exec_curve_fit(period, t_list, p_correct_diff_list)
+    zero_pos = 0
+    for i in range(len(v0_list)-1):
+        prev = v0_list[i-1]
+        current = v0_list[i]
+        if ((current < A0*Zh0) and (A0*Zh0 < prev)):
+            print(prev, current)
+            print(i)
+            zero_pos = i-1
+            break
+
+    print(zero_pos)
+    guess_pres = exec_curve_fit(period, t_list[zero_pos:], p_correct_diff_list[zero_pos:])
     print('pressure')
     print('freq, apm, phase, offset')
     print(guess_pres)
@@ -66,8 +77,8 @@ def main(args):
     # 非圧縮性の力欠損係数
     f_i = incomp_force_coef(c_ci)
     flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list, A)
-    guess_flow = exec_curve_fit(period, t_list, flow_list)
-    guess_mass_flow = exec_curve_fit(period, t_list, mass_flow_list)
+    guess_flow = exec_curve_fit(period, t_list[zero_pos:], flow_list[zero_pos:])
+    guess_mass_flow = exec_curve_fit(period, t_list[zero_pos:], mass_flow_list[zero_pos:])
     print('flow')
     print('freq, apm, phase, offset')
     print(guess_flow)
@@ -79,7 +90,8 @@ def main(args):
     # print('#####################################################')
     # print('file outputing')
     # print('#####################################################')
-    # # output_to_csv(t_list, p_diff_list, p_correct_diff_list, save_file_path)
+    v0_list = np.array(v0_list)
+    output_to_csv(t_list[zero_pos:], p_diff_list[zero_pos:], p_correct_diff_list[zero_pos:], v0_list[zero_pos:], save_file_path)
 
     # # total_time_end = time.time()
     # # total_time = divmod(total_time_end-total_time_start, 60)
