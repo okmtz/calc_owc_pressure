@@ -91,7 +91,8 @@ def main(args):
     # print('file outputing')
     # print('#####################################################')
     v0_list = np.array(v0_list)
-    output_to_csv(t_list[zero_pos:], p_diff_list[zero_pos:], p_correct_diff_list[zero_pos:], v0_list[zero_pos:], save_file_path)
+    zd_list = v0_list / A0
+    # output_to_csv(t_list[zero_pos:], p_diff_list[zero_pos:], p_correct_diff_list[zero_pos:], flow_list[zero_pos:], mass_flow_list[zero_pos:], zd_list[zero_pos:], save_file_path)
 
     # # total_time_end = time.time()
     # # total_time = divmod(total_time_end-total_time_start, 60)
