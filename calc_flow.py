@@ -13,7 +13,7 @@ def back_flow(c_c, A, p_down) -> '吸込流量':
     return c_c * A * ((p_air / p_down) ** (-1 * h_ratio_rev)) * (((2 / (1 - h_ratio_rev)) * (p_air / dens_air) * (1 - (p_air / p_down) ** (h_ratio_rev - 1))) ** (1 / 2))
 
 
-def calc_density(p)->'断熱仮定での密度':
+def calc_density(p) -> '断熱仮定での密度':
     dens = dens_air * ((p / p_air) ** (1 / h_ratio))
     return dens
 

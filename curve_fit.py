@@ -8,8 +8,8 @@ def init(data_list, freq):
     guess_phase = 0
     guess_offset = np.mean(data_list)
 
-    p0=[guess_freq, guess_amplitude,
-        guess_phase, guess_offset]
+    p0 = [guess_freq, guess_amplitude,
+          guess_phase, guess_offset]
 
     return p0
 
