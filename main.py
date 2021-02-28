@@ -1,13 +1,13 @@
 import argparse
 import numpy as np
 import time
-from read_input_file import p_air, dens_air, h_ratio
-from read_input_file import read_input_value, init_input_data
+from utils.read_input_file import p_air, dens_air, h_ratio
+from utils.read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
-from calc_coefficient import incomp_condensation_coef, incomp_force_coef
+from utils.calc_coefficient import incomp_condensation_coef, incomp_force_coef
 from calc_flow import calc_flow_and_mass_flow
-from output import output_to_csv
-from curve_fit import exec_curve_fit
+from utils.output import output_to_csv
+from utils.curve_fit import exec_curve_fit
 
 
 def get_arg():
@@ -92,7 +92,7 @@ def main(args):
     print('file outputing')
     print('#####################################################')
     output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list,
-                  mass_flow_list, zd_list, desn_list, save_file_path)
+                  mass_flow_list, zd_list, dens_list, save_file_path)
 
     total_time_end = time.time()
     total_time = divmod(total_time_end-total_time_start, 60)
