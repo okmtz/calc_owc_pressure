@@ -73,7 +73,7 @@ def main(args):
 
     c_ci = incomp_condensation_coef(d_ratio)
     f_i = incomp_force_coef(c_ci)
-    flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list, A)
+    flow_list, mass_flow_list, dens_list = calc_flow_and_mass_flow(f_i, p_list, A)
     guess_flow = exec_curve_fit(period, t_list[zero_pos:], flow_list[zero_pos:])
     guess_mass_flow = exec_curve_fit(period, t_list[zero_pos:], mass_flow_list[zero_pos])
 
@@ -87,7 +87,7 @@ def main(args):
     print('#####################################################')
     print('file outputing')
     print('#####################################################')
-    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, zd_list, save_file_path)
+    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, zd_list, desn_list, save_file_path)
 
     total_time_end = time.time()
     total_time = divmod(total_time_end-total_time_start, 60)

@@ -13,7 +13,7 @@ def back_flow(c_c, A, p_down) -> '吸込流量':
     return c_c * A * ((p_air / p_down) ** (-1 * h_ratio_rev)) * (((2 / (1 - h_ratio_rev)) * (p_air / dens_air) * (1 - (p_air / p_down) ** (h_ratio_rev - 1))) ** (1 / 2))
 
 
-def calc_density(p) -> '断熱仮定での密度':
+def calc_density(p)->'断熱仮定での密度':
     dens = dens_air * ((p / p_air) ** (1 / h_ratio))
     return dens
 
@@ -21,6 +21,7 @@ def calc_density(p) -> '断熱仮定での密度':
 def calc_flow_and_mass_flow(f_ci, p_list, A):
     flow_list = []
     mass_flow_list = []
+    dens_list - []
     for p in p_list:
         dens = calc_density(p)
         if (p > p_air):
@@ -29,6 +30,7 @@ def calc_flow_and_mass_flow(f_ci, p_list, A):
         else:
             c_c = comp_condensation_coef(f_ci, p_air, p)
             flow = (-1) * back_flow(c_c, A, p)
+        dens_list.append(dens)
         flow_list.append(flow)
         mass_flow_list.append(dens*flow)
-    return flow_list, mass_flow_list
+    return flow_list, mass_flow_list, dens_list
