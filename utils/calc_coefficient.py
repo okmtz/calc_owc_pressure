@@ -1,4 +1,4 @@
-from read_input_file import p_air, dens_air, h_ratio
+from utils.read_input_file import p_air, dens_air, h_ratio
 
 
 def incomp_force_coef(c_ci) -> '非圧縮性力欠損係数':

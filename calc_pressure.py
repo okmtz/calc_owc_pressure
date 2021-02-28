@@ -1,7 +1,8 @@
 import numpy as np
-from read_input_file import p_air, dens_air, h_ratio
-from calc_coefficient import incomp_condensation_coef, incomp_force_coef, comp_condensation_coef
+from utils.read_input_file import p_air, dens_air, h_ratio
+from utils.calc_coefficient import incomp_condensation_coef, incomp_force_coef, comp_condensation_coef
 from calc_flow import forward_flow, back_flow
+from utils.calc_density import calc_density
 
 
 def call_calc_state(n, period, total_time, phase_diff, d_ratio, A0, A, Zh, Zh0, p0, p0_delta) -> '圧力, 圧力勾配, 空気室内容積変位計算の呼び出し':
@@ -76,11 +77,6 @@ def calc_dpdt(p, t, c_freq, d_ratio, V0, dV0dt, A, f_ci) -> '圧力変動':
         dpdt = (-7/5) * p * ((dV0dt / V0) +
                              (((dens_air / dens) ** h_ratio) * (((-1) * flow) / V0)))
     return dpdt
-
-
-def calc_density(p) -> '断熱仮定での密度':
-    dens = dens_air * ((p / p_air) ** (1/h_ratio))
-    return dens
 
 
 def calc_forward_p_delta(p_prev, p_current, f_ci, h, dens_prev, dens_current, V0, dV0dt, dV02dt2, A, A0) -> '押出過程での圧力勾配を計算':
