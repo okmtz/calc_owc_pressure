@@ -4,7 +4,10 @@ import time
 from read_input_file import p_air, dens_air, h_ratio
 from read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
+from calc_coefficient import incomp_condensation_coef, incomp_force_coef
+from calc_flow import calc_flow_and_mass_flow
 from output import output_to_csv
+from curve_fit import exec_curve_fit
 
 
 def get_arg():
@@ -54,13 +57,41 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
+    zero_pos = 0
+    for i in range(len(v0_list) - 1):
+        prev = v0_list[i-1]
+        current = v0_list[i]
+        if ((current < A0 * Zh0) and (A0 * Zh0 < prev)):
+            print(prev, current)
+            zero_pos = i-1
+            break
+
+    guess_pres = exec_curve_fit(period, t_list[zero_pos:], p_correct_diff_list[zero_pos:])
+    print('pressure')
+    print('freq, amplitude, phase, offset')
+    print(guess_pres)
+
+    c_ci = incomp_condensation_coef(d_ratio)
+    f_i = incomp_force_coef(c_ci)
+    flow_list, mass_flow_list = calc_flow_and_mass_flow(f_i, p_list, A)
+    guess_flow = exec_curve_fit(period, t_list[zero_pos:], flow_list[zero_pos:])
+    guess_mass_flow = exec_curve_fit(period, t_list[zero_pos:], mass_flow_list[zero_pos])
+
+    print('flow')
+    print('freq, amplitude, phase, offset')
+    print(guess_mass_flow)
+
+    v0_list = np.array(v0_list)
+    zd_list = v0_list / A0
+
     print('#####################################################')
     print('file outputing')
     print('#####################################################')
-    output_to_csv(t_list, p_diff_list, p_correct_diff_list, save_file_path)
+    output_to_csv(t_list, p_diff_list, p_correct_diff_list, flow_list, mass_flow_list, zd_list, save_file_path)
 
     total_time_end = time.time()
     total_time = divmod(total_time_end-total_time_start, 60)
+
     print('#####################################################')
     print(f'output result {save_file_name}')
     print(f'total time: {int(total_time[0])}m {int(total_time[1])}s')

@@ -11,8 +11,8 @@ def call_calc_state(n, period, total_time, phase_diff, d_ratio, A0, A, Zh, Zh0, 
     total_split = len(t)
     p, V0, dV0dt, dV02dt2, p_delta = [np.empty(total_split) for i in range(5)]
     p[0], p_delta[0] = p_air + p0, p0_delta
-    V0[0], dV0dt[0], dV02dt2[0] = (Zh0 + Zh * np.cos(phase_diff)) * A0, ((-1) * c_freq * Zh * np.sin(
-        phase_diff)) * A0, ((-1) * ((c_freq) ** 2) * Zh * np.cos(phase_diff)) * A0
+    V0[0], dV0dt[0], dV02dt2[0] = (Zh0 + Zh * np.sin(phase_diff)) * A0, (c_freq * Zh * np.cos(
+        phase_diff)) * A0, ((-1) * ((c_freq) ** 2) * Zh * np.sin(phase_diff)) * A0
     t, p, V0, p_delta = runge_kutta(
         h, t, total_split, c_freq, phase_diff, p, p_delta, V0, dV0dt, dV02dt2, d_ratio, A0, A, Zh, Zh0)
 
@@ -38,11 +38,11 @@ def runge_kutta(h: '時間分割', t, total_split, c_freq, phase_diff, p, p_delt
 
         ###########空気室内容積を計算############
         ###############中型模型################
-        V0[i+1] = (Zh0 + Zh * np.cos(c_freq * t[i] + phase_diff)) * A0
-        dV0dt[i+1] = ((-1) * c_freq * Zh *
-                      np.sin(c_freq * t[i] + phase_diff)) * A0
+        V0[i+1] = (Zh0 + Zh * np.sin(c_freq * t[i] + phase_diff)) * A0
+        dV0dt[i+1] = (c_freq * Zh *
+                      np.cos(c_freq * t[i] + phase_diff)) * A0
         dV02dt2[i+1] = ((-1) * ((c_freq) ** 2) * Zh *
-                        np.cos(c_freq * t[i] + phase_diff)) * A0
+                        np.sin(c_freq * t[i] + phase_diff)) * A0
         #####################################
 
         ##########圧力勾配を計算################

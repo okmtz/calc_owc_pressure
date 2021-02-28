@@ -35,6 +35,6 @@ def init_input_data(input_data):
     d_ratio = n_ratio ** (1/2)
     n_diam = D0 * d_ratio
     # カラム内断面積
-    A0 = ((D0 / 2) ** 2) ** np.pi
+    A0 = ((D0 / 2) ** 2) * np.pi
     A = A0 * (d_ratio ** 2)
     return period, n, total_time, n_diam, D0, Zh, Zh0, phase_diff, p0, p0_delta, d_ratio, A, A0
