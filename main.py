@@ -36,7 +36,7 @@ def main(args):
     print('initialize input data')
     print('#####################################################')
 
-    period, n, total_time, n_diam, D0, Zh, Zh0, phase_diff, p0, p0_delta, d_ratio, A, A0 = init_input_data(
+    period, n, total_time, n_diam, D0, Zd, Zd0, phase_diff, p0, p0_delta, d_ratio, A, A0 = init_input_data(
         input_data)
 
     print('#####################################################')
@@ -44,8 +44,8 @@ def main(args):
     print('#####################################################')
     start_time = time.time()
 
-    t_list, p_list, v0_list, p_delta_list = call_calc_state(
-        n, period, total_time, phase_diff, d_ratio, A0, A, Zh, Zh0, p0, p0_delta)
+    t_list, p_list, v0_list, dv0dt_list, p_delta_list = call_calc_state(
+        n, period, total_time, phase_diff, d_ratio, A0, A, Zd, Zd0, p0, p0_delta)
 
     end_time = time.time()
     p_calc_time = divmod(end_time-start_time, 60)
@@ -61,7 +61,7 @@ def main(args):
     for i in range(len(v0_list) - 1):
         prev = v0_list[i-1]
         current = v0_list[i]
-        if ((current < A0 * Zh0) and (A0 * Zh0 < prev)):
+        if ((current < A0 * Zd0) and (A0 * Zd0 < prev)):
             print(prev, current)
             zero_pos = i-1
             break
@@ -83,6 +83,10 @@ def main(args):
         period, t_list[zero_pos:], mass_flow_list[zero_pos])
 
     print('flow')
+    print('freq, amplitude, phase, offset')
+    print(guess_flow)
+
+    print('mass flow')
     print('freq, amplitude, phase, offset')
     print(guess_mass_flow)
 
