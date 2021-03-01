@@ -9,6 +9,7 @@ dens_air = 1.225
 # 比熱比
 h_ratio = 1.4
 
+
 def read_input_value(load_path):
     try:
         with open(load_path, 'r') as yml:
