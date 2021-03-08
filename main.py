@@ -4,6 +4,7 @@ import time
 from utils.read_input_file import p_air, dens_air, h_ratio
 from utils.read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
+from calc_energy import calc_energy
 from utils.calc_coefficient import incomp_condensation_coef, incomp_force_coef
 from calc_flow import calc_flow_and_mass_flow
 from utils.output import output_to_csv
@@ -57,17 +58,18 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
-    zero_pos = 0
+    tip_point = 0
+    end_point = 0
     for i in range(len(v0_list) - 1):
         prev = v0_list[i-1]
         current = v0_list[i]
         if ((current < A0 * Zd0) and (A0 * Zd0 < prev)):
-            print(prev, current)
-            zero_pos = i-1
-            break
+            if (tip_point == 0):
+                tip_point = i-1
+            end_point = i
 
     guess_pres = exec_curve_fit(
-        period, t_list[zero_pos:], p_correct_diff_list[zero_pos:])
+        period, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point])
     print('pressure')
     print('freq, amplitude, phase, offset')
     print(guess_pres)
@@ -78,9 +80,9 @@ def main(args):
     flow_list, mass_flow_list, dens_list = calc_flow_and_mass_flow(
         f_i, p_list, A)
     guess_flow = exec_curve_fit(
-        period, t_list[zero_pos:], flow_list[zero_pos:])
+        period, t_list[tip_point:end_point], flow_list[tip_point:end_point])
     guess_mass_flow = exec_curve_fit(
-        period, t_list[zero_pos:], mass_flow_list[zero_pos])
+        period, t_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
 
     print('flow')
     print('freq, amplitude, phase, offset')
@@ -92,6 +94,20 @@ def main(args):
 
     v0_list = np.array(v0_list)
     zd_list = v0_list / A0
+
+    dv0dt_list = np.array(dv0dt_list)
+    dzddt_list = dv0dt_list / A0
+    dzdt_list = (-1) * dzddt_list
+
+    # wave_energy_per_period = calc_energy(period, A0, tip_point, end_point, t_list, p_correct_diff_list, dzdt_list)
+
+    phase_diff = (guess_pres[2] - np.pi) if (guess_pres[1] >= 0) else ((guess_pres[2] + np.pi) - np.pi)
+    wave_energy_per_period_2 = (1/2) * guess_pres[1] * Zd * A0 * (2 * np.pi / period) * np.sin(phase_diff)
+    print('wave energy per period')
+    # print(wave_energy_per_period)
+    print('press amp, phase')
+    print(guess_pres[1], guess_pres[2])
+    print(wave_energy_per_period_2)
 
     print('#####################################################')
     print('file outputing')

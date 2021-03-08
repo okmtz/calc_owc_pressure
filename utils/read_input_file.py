@@ -30,8 +30,8 @@ def init_input_data(input_data):
     phase_diff = input_data['input']['phase_diff']
     p0 = input_data['input']['p0']
     p0_delta = input_data['input']['p0_delta']
-    # 10周期分
-    total_time = period * 12
+    # 15周期分
+    total_time = period * 15
     # 絞り直径比
     d_ratio = n_ratio ** (1/2)
     n_diam = D0 * d_ratio
