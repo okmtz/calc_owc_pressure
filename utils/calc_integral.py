@@ -7,5 +7,5 @@ def calc_integral(x_length, x_tip, x_end, y_list):
         f1 = y_list[i-1]
         f2 = y_list[i]
         integral_val += (f1 + f2) * dx / 2
-    
+
     return integral_val

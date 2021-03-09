@@ -101,10 +101,13 @@ def main(args):
     dzddt_list = dv0dt_list / A0
     dzdt_list = (-1) * dzddt_list
 
-    wave_energy_per_period = calc_wave_energy(period, A0, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point], dzdt_list[tip_point:end_point])
-    air_kinetic_energy_per_period = calc_air_kinetic_energy(period, A, t_list[tip_point:end_point], flow_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
+    wave_energy_per_period = calc_wave_energy(
+        period, A0, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point], dzdt_list[tip_point:end_point])
+    air_kinetic_energy_per_period = calc_air_kinetic_energy(
+        period, A, t_list[tip_point:end_point], flow_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
 
-    phase_diff = (guess_pres[2] - np.pi) if (guess_pres[1] >= 0) else ((guess_pres[2] + np.pi) - np.pi)
+    phase_diff = (guess_pres[2] - np.pi) if (guess_pres[1]
+                                             >= 0) else ((guess_pres[2] + np.pi) - np.pi)
     print('wave energy per period')
     print(wave_energy_per_period / period)
     print('kinetic energy per period')

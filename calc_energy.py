@@ -2,7 +2,7 @@ from utils.calc_integral import calc_integral
 import numpy as np
 
 
-def calc_wave_energy(period, A0: 'area on water line', t_list, p_list: 'pressure list', dzdt_list: 'water line diff')-> '水面が空気室に対してなす仕事':
+def calc_wave_energy(period, A0: 'area on water line', t_list, p_list: 'pressure list', dzdt_list: 'water line diff') -> '水面が空気室に対してなす仕事':
     n = len(t_list)
     t_tip = t_list[0]
     t_end = t_list[-1]
@@ -14,7 +14,7 @@ def calc_wave_energy(period, A0: 'area on water line', t_list, p_list: 'pressure
     return wave_energy_per_period
 
 
-def calc_air_kinetic_energy(period, A, t_list, flow_list, mass_flow_list)-> '空気の運動エネルギー':
+def calc_air_kinetic_energy(period, A, t_list, flow_list, mass_flow_list) -> '空気の運動エネルギー':
     air_velocity_list = flow_list / A
     n = len(t_list)
     t_tip = t_list[0]
