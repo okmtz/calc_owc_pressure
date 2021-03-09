@@ -5,22 +5,22 @@ from calc_flow import forward_flow, back_flow
 from utils.calc_density import calc_density
 
 
-def call_calc_state(n, period, total_time, phase_diff, d_ratio, A0, A, Zh, Zh0, p0, p0_delta) -> '圧力, 圧力勾配, 空気室内容積変位計算の呼び出し':
+def call_calc_state(n, period, total_time, phase_diff, d_ratio, A0, A, Zd, Zd0, p0, p0_delta) -> '圧力, 圧力勾配, 空気室内容積変位計算の呼び出し':
     h = period / n  # 分割時間
     t = np.arange(0, total_time, h)
     c_freq = 2 * np.pi / period  # 円振動数
     total_split = len(t)
     p, V0, dV0dt, dV02dt2, p_delta = [np.empty(total_split) for i in range(5)]
     p[0], p_delta[0] = p_air + p0, p0_delta
-    V0[0], dV0dt[0], dV02dt2[0] = (Zh0 + Zh * np.sin(phase_diff)) * A0, (c_freq * Zh * np.cos(
-        phase_diff)) * A0, ((-1) * ((c_freq) ** 2) * Zh * np.sin(phase_diff)) * A0
-    t, p, V0, p_delta = runge_kutta(
-        h, t, total_split, c_freq, phase_diff, p, p_delta, V0, dV0dt, dV02dt2, d_ratio, A0, A, Zh, Zh0)
+    V0[0], dV0dt[0], dV02dt2[0] = (Zd0 + Zd * np.sin(phase_diff)) * A0, (c_freq * Zd * np.cos(
+        phase_diff)) * A0, ((-1) * ((c_freq) ** 2) * Zd * np.sin(phase_diff)) * A0
+    t, p, V0, dV0dt, p_delta = runge_kutta(
+        h, t, total_split, c_freq, phase_diff, p, p_delta, V0, dV0dt, dV02dt2, d_ratio, A0, A, Zd, Zd0)
 
-    return t, p, V0, p_delta
+    return t, p, V0, dV0dt, p_delta
 
 
-def runge_kutta(h: '時間分割', t, total_split, c_freq, phase_diff, p, p_delta, V0, dV0dt, dV02dt2, d_ratio, A0, A, Zh, Zh0) -> 'Runge-Kutta法を用いた圧力の計算, 圧力勾配, 空気室内容積変位の計算':
+def runge_kutta(h: '時間分割', t, total_split, c_freq, phase_diff, p, p_delta, V0, dV0dt, dV02dt2, d_ratio, A0, A, Zd, Zd0) -> 'Runge-Kutta法を用いた圧力の計算, 圧力勾配, 空気室内容積変位の計算':
     # 非圧縮性の縮流係数
     c_ci = incomp_condensation_coef(d_ratio)
     # 非圧縮性の力欠損係数
@@ -39,10 +39,10 @@ def runge_kutta(h: '時間分割', t, total_split, c_freq, phase_diff, p, p_delt
 
         ###########空気室内容積を計算############
         ###############中型模型################
-        V0[i+1] = (Zh0 + Zh * np.sin(c_freq * t[i] + phase_diff)) * A0
-        dV0dt[i+1] = (c_freq * Zh *
+        V0[i+1] = (Zd0 + Zd * np.sin(c_freq * t[i] + phase_diff)) * A0
+        dV0dt[i+1] = (c_freq * Zd *
                       np.cos(c_freq * t[i] + phase_diff)) * A0
-        dV02dt2[i+1] = ((-1) * ((c_freq) ** 2) * Zh *
+        dV02dt2[i+1] = ((-1) * ((c_freq) ** 2) * Zd *
                         np.sin(c_freq * t[i] + phase_diff)) * A0
         #####################################
 
@@ -60,7 +60,7 @@ def runge_kutta(h: '時間分割', t, total_split, c_freq, phase_diff, p, p_delt
         if (np.isnan(p[i+1])):
             raise Exception('pressure is not nan')
 
-    return t, p, V0, p_delta
+    return t, p, V0, dV0dt, p_delta
 
 
 def calc_dpdt(p, t, c_freq, d_ratio, V0, dV0dt, A, f_ci) -> '圧力変動':

@@ -4,6 +4,7 @@ import time
 from utils.read_input_file import p_air, dens_air, h_ratio
 from utils.read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
+from calc_energy import calc_wave_energy, calc_air_kinetic_energy
 from utils.calc_coefficient import incomp_condensation_coef, incomp_force_coef
 from calc_flow import calc_flow_and_mass_flow
 from utils.output import output_to_csv
@@ -36,7 +37,7 @@ def main(args):
     print('initialize input data')
     print('#####################################################')
 
-    period, n, total_time, n_diam, D0, Zh, Zh0, phase_diff, p0, p0_delta, d_ratio, A, A0 = init_input_data(
+    period, n, total_time, n_diam, D0, Zd, Zd0, phase_diff, p0, p0_delta, d_ratio, A, A0 = init_input_data(
         input_data)
 
     print('#####################################################')
@@ -44,8 +45,8 @@ def main(args):
     print('#####################################################')
     start_time = time.time()
 
-    t_list, p_list, v0_list, p_delta_list = call_calc_state(
-        n, period, total_time, phase_diff, d_ratio, A0, A, Zh, Zh0, p0, p0_delta)
+    t_list, p_list, v0_list, dv0dt_list, p_delta_list = call_calc_state(
+        n, period, total_time, phase_diff, d_ratio, A0, A, Zd, Zd0, p0, p0_delta)
 
     end_time = time.time()
     p_calc_time = divmod(end_time-start_time, 60)
@@ -57,36 +58,60 @@ def main(args):
     p_diff_list = p_list - p_air
     p_correct_diff_list = p_delta_list + p_diff_list
 
-    zero_pos = 0
+    tip_point = 0
+    end_point = 0
     for i in range(len(v0_list) - 1):
         prev = v0_list[i-1]
         current = v0_list[i]
-        if ((current < A0 * Zh0) and (A0 * Zh0 < prev)):
-            print(prev, current)
-            zero_pos = i-1
-            break
+        if ((current < A0 * Zd0) and (A0 * Zd0 < prev)):
+            if (tip_point == 0):
+                tip_point = i-1
+            end_point = i
 
     guess_pres = exec_curve_fit(
-        period, t_list[zero_pos:], p_correct_diff_list[zero_pos:])
+        period, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point])
     print('pressure')
     print('freq, amplitude, phase, offset')
     print(guess_pres)
 
     c_ci = incomp_condensation_coef(d_ratio)
     f_i = incomp_force_coef(c_ci)
+
     flow_list, mass_flow_list, dens_list = calc_flow_and_mass_flow(
         f_i, p_list, A)
     guess_flow = exec_curve_fit(
-        period, t_list[zero_pos:], flow_list[zero_pos:])
+        period, t_list[tip_point:end_point], flow_list[tip_point:end_point])
     guess_mass_flow = exec_curve_fit(
-        period, t_list[zero_pos:], mass_flow_list[zero_pos])
+        period, t_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
 
     print('flow')
     print('freq, amplitude, phase, offset')
+    print(guess_flow)
+
+    print('mass flow')
+    print('freq, amplitude, phase, offset')
     print(guess_mass_flow)
 
+    flow_list = np.array(flow_list)
+    mass_flow_list = np.array(mass_flow_list)
     v0_list = np.array(v0_list)
     zd_list = v0_list / A0
+
+    dv0dt_list = np.array(dv0dt_list)
+    dzddt_list = dv0dt_list / A0
+    dzdt_list = (-1) * dzddt_list
+
+    wave_energy_per_period = calc_wave_energy(
+        period, A0, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point], dzdt_list[tip_point:end_point])
+    air_kinetic_energy_per_period = calc_air_kinetic_energy(
+        period, A, t_list[tip_point:end_point], flow_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
+
+    phase_diff = (guess_pres[2] - np.pi) if (guess_pres[1]
+                                             >= 0) else ((guess_pres[2] + np.pi) - np.pi)
+    print('wave energy per period')
+    print(wave_energy_per_period / period)
+    print('kinetic energy per period')
+    print(air_kinetic_energy_per_period / period)
 
     print('#####################################################')
     print('file outputing')
