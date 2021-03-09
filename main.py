@@ -4,7 +4,7 @@ import time
 from utils.read_input_file import p_air, dens_air, h_ratio
 from utils.read_input_file import read_input_value, init_input_data
 from calc_pressure import call_calc_state
-from calc_energy import calc_wave_energy
+from calc_energy import calc_wave_energy, calc_air_kinetic_energy
 from utils.calc_coefficient import incomp_condensation_coef, incomp_force_coef
 from calc_flow import calc_flow_and_mass_flow
 from utils.output import output_to_csv
@@ -92,6 +92,8 @@ def main(args):
     print('freq, amplitude, phase, offset')
     print(guess_mass_flow)
 
+    flow_list = np.array(flow_list)
+    mass_flow_list = np.array(mass_flow_list)
     v0_list = np.array(v0_list)
     zd_list = v0_list / A0
 
@@ -100,10 +102,13 @@ def main(args):
     dzdt_list = (-1) * dzddt_list
 
     wave_energy_per_period = calc_wave_energy(period, A0, t_list[tip_point:end_point], p_correct_diff_list[tip_point:end_point], dzdt_list[tip_point:end_point])
+    air_kinetic_energy_per_period = calc_air_kinetic_energy(period, A, t_list[tip_point:end_point], flow_list[tip_point:end_point], mass_flow_list[tip_point:end_point])
 
     phase_diff = (guess_pres[2] - np.pi) if (guess_pres[1] >= 0) else ((guess_pres[2] + np.pi) - np.pi)
     print('wave energy per period')
     print(wave_energy_per_period / period)
+    print('kinetic energy per period')
+    print(air_kinetic_energy_per_period / period)
 
     print('#####################################################')
     print('file outputing')
